@@ -371,6 +371,15 @@ function resize() {
   camera.aspect = w / h;
   // 縦長の画面では少し広角にして全体を収める
   camera.fov = camera.aspect < 1 ? 42 : 30;
+  // 縦長では、題字と下の操作部のあいだの空きの真ん中に来るよう表示位置をずらす
+  if (camera.aspect < 1) {
+    const top = document.querySelector(".masthead").getBoundingClientRect().bottom;
+    const bottom = document.querySelector(".bottom").getBoundingClientRect().top;
+    const shift = h / 2 - (top + bottom) / 2;
+    camera.setViewOffset(w, h, 0, shift, w, h);
+  } else {
+    camera.clearViewOffset();
+  }
   camera.updateProjectionMatrix();
 }
 addEventListener("resize", resize);

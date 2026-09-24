@@ -43,25 +43,31 @@
       <span>焼き上げ中…</span>
     </div>
 
-    <nav class="dock" aria-label="視点の切り替え">
-      <div class="views" role="group" aria-label="視点">
-        <button type="button" data-view="front" aria-pressed="true">斜め</button>
-        <button type="button" data-view="top" aria-pressed="false">真上</button>
-        <button type="button" data-view="side" aria-pressed="false">真横</button>
-        <button type="button" data-view="bottom" aria-pressed="false">底</button>
-      </div>
-      <div class="actions">
-        <button type="button" id="split" class="primary" aria-pressed="false">
-          <span class="when-closed">割ってみる</span><span class="when-open">元に戻す</span>
-        </button>
-        <button type="button" id="spin" class="icon" aria-pressed="true" aria-label="自動回転">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </div>
-    </nav>
+    <div class="bottom">
+      <p class="hint">
+        <span class="hint-long">ドラッグで好きな向きに回転 ・ ホイール／ピンチで拡大 ・ ダブルクリックで元の向き</span>
+        <span class="hint-short">ドラッグで回転 ・ ピンチで拡大</span>
+      </p>
 
-    <p class="hint">ドラッグで好きな向きに回転 ・ ホイール／ピンチで拡大 ・ ダブルクリックで元の向き</p>
-    <p class="credit">非公式のファンメイド3Dモデルです</p>
+      <nav class="dock" aria-label="視点の切り替え">
+        <div class="views" role="group" aria-label="視点">
+          <button type="button" data-view="front" aria-pressed="true">斜め</button>
+          <button type="button" data-view="top" aria-pressed="false">真上</button>
+          <button type="button" data-view="side" aria-pressed="false">真横</button>
+          <button type="button" data-view="bottom" aria-pressed="false">底</button>
+        </div>
+        <div class="actions">
+          <button type="button" id="split" class="primary" aria-pressed="false">
+            <span class="when-closed">割ってみる</span><span class="when-open">元に戻す</span>
+          </button>
+          <button type="button" id="spin" class="icon" aria-pressed="true" aria-label="自動回転">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v4.5h-4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </nav>
+
+      <p class="credit">非公式のファンメイド3Dモデルです</p>
+    </div>
   </main>
 
   <script type="module" src="main.js"></script>

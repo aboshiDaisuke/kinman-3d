@@ -2,7 +2,7 @@
 
 秋田銘菓「金萬」を、好きな向きに回して眺められる 3D ビューアです（非公式のファンメイド）。
 
-**公開ページ:** https://aboshidaisuke.github.io/kinman-3d/
+**公開ページ:** https://abs-mart.net/kinman-3d/
 
 ![全体](renders/kinman_01_overview.png)
 

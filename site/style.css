@@ -165,19 +165,27 @@ html, body {
 }
 @keyframes breathe { 50% { transform: scale(0.9); opacity: 0.35; } }
 
-/* ---- 操作ドック ---- */
-.dock {
+/* ---- 下部（説明・操作ドック・注記を縦に積む。折り返しても重ならない） ---- */
+.bottom {
   position: absolute;
-  left: 50%;
-  bottom: calc(clamp(18px, 4vh, 40px) + env(safe-area-inset-bottom));
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: calc(clamp(12px, 2.5vh, 28px) + env(safe-area-inset-bottom));
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+.dock {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
   justify-content: center;
-  width: max-content;
-  max-width: calc(100vw - 32px);
+  max-width: 100%;
+  pointer-events: auto;
 }
 .views, .actions {
   display: flex;
@@ -232,39 +240,39 @@ button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
 #split[aria-pressed="true"] .when-closed { display: none; }
 
 .hint, .credit {
-  position: absolute;
   margin: 0;
   font-size: 11px;
   letter-spacing: 0.2em;
+  line-height: 1.7;
+  text-align: center;
   color: var(--ink-soft);
-  pointer-events: none;
   user-select: none;
 }
-.hint {
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(clamp(18px, 4vh, 40px) + 64px + env(safe-area-inset-bottom));
-  opacity: 0.8;
-  white-space: nowrap;
-}
-.credit {
-  right: clamp(16px, 3vw, 28px);
-  bottom: calc(10px + env(safe-area-inset-bottom));
-  opacity: 0.6;
-  letter-spacing: 0.1em;
+.hint { opacity: 0.8; }
+.hint-short { display: none; }
+.credit { opacity: 0.6; letter-spacing: 0.1em; }
+
+@media (max-width: 640px), (pointer: coarse) {
+  .hint-long { display: none; }
+  .hint-short { display: inline; }
 }
 
+/* スマホ: 題字は横書きで上に、寸法は隠す */
 @media (max-width: 640px) {
   .spec { display: none; }
-  .title { font-size: 60px; }
-  .hint {
-    bottom: calc(18px + 112px + env(safe-area-inset-bottom));
-    white-space: normal;
-    width: calc(100vw - 32px);
-    text-align: center;
-    line-height: 1.8;
+  .masthead {
+    top: calc(14px + env(safe-area-inset-top));
+    left: 16px;
+    right: 16px;
+    writing-mode: horizontal-tb;
+    align-items: baseline;
+    gap: 10px;
   }
-  .credit { left: 16px; right: 16px; text-align: center; }
+  .kicker { font-size: 12px; letter-spacing: 0.25em; padding: 0; }
+  .title { font-size: 34px; letter-spacing: 0.12em; }
+  .reading { font-size: 11px; letter-spacing: 0.3em; padding: 0; }
+  .bottom { gap: 10px; }
+  .dock { gap: 8px; }
   button { padding: 10px 13px; letter-spacing: 0.06em; }
 }
 
