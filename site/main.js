@@ -17,7 +17,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true 
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NeutralToneMapping;
-renderer.toneMappingExposure = 1.0;
+renderer.toneMappingExposure = 0.9;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.VSMShadowMap;
 
@@ -123,12 +123,12 @@ new GLTFLoader().load(
       for (const k of ["map", "normalMap", "roughnessMap"]) {
         if (m[k]) m[k].anisotropy = maxAniso;
       }
-      // 焼き菓子のふんわりした表面の照り（ベルベット状の反射）
+      // 焼き菓子の照りは控えめに。強いと焼き印に白いもやがかかる（実物写真との比較で調整）
       if (m.isMeshPhysicalMaterial) {
-        m.sheen = 0.35;
-        m.sheenRoughness = 0.5;
-        m.sheenColor = new THREE.Color(0xffe2bc);
-        m.specularIntensity = 0.45;
+        m.sheen = 0.06;
+        m.sheenRoughness = 0.4;
+        m.sheenColor = new THREE.Color(0xffc080);
+        m.specularIntensity = 0.3;
       }
     });
     whole = gltf.scene.getObjectByName("KM_Whole");
@@ -397,7 +397,8 @@ renderer.setAnimationLoop((now) => {
       rotateWorld(spinVel, spinVel.length() * dt);
       spinVel.multiplyScalar(Math.exp(-dt * 3.2));
     } else if (autoRotate && !turnTween) {
-      rotateWorld(Y_AXIS, 0.45 * dt);
+      // お菓子自身の上下軸まわりに回す（ターンテーブル）。傾きはそのまま保つ
+      root.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(Y_AXIS, 0.45 * dt));
     }
   }
 

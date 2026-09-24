@@ -1,7 +1,5 @@
 # 生成物（tools/gen_textures.py で再生成できる）
-textures/kinman_color.png
-textures/kinman_normal.png
-textures/kinman_rough.png
+textures/kinman_*.png
 # Blender ファイル（ローカルの絶対パスを参照している）
 *.blend
 *.blend1

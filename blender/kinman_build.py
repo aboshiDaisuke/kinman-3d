@@ -1,7 +1,7 @@
 """金萬のメッシュ生成（Blender 内で exec して使う）。
 
 build_kinman(name, theta=(0, 2π)) で旋盤状のメッシュを作る。形とUV配置は kinman_shape.py。
-丸ごと1個も、半分ずつも同じ1個体から作るので、割っても形がずれない。
+丸ごと1個も、半分ずつも同じ1個体（seed）から作るので、割っても形がずれない。
 UV は BakeUV の1つだけ（全ピースで1組のテクスチャを共有）。単位はメートル（実寸）。
 """
 import bpy, bmesh, math, sys, importlib
@@ -13,12 +13,12 @@ importlib.reload(K)
 CM = 0.01
 
 
-def _pos(r, z, th):
-    rr, zz = K.wobble(r, z, th)
+def _pos(r, z, th, seed=0):
+    rr, zz = K.wobble(r, z, th, seed)
     return (rr * math.cos(th) * CM, rr * math.sin(th) * CM, zz * CM)
 
 
-def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None):
+def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None, seed=0):
     th0, th1 = theta
     full = abs((th1 - th0) - 2 * math.pi) < 1e-6
     n_th = steps if full else int(round(steps * (th1 - th0) / (2 * math.pi))) + 1
@@ -30,9 +30,9 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None):
     rings = []
     for (r, z) in K.PROF:
         if r < 1e-6:
-            rings.append([bm.verts.new(_pos(0, z, 0))])
+            rings.append([bm.verts.new(_pos(0, z, 0, seed))])
         else:
-            rings.append([bm.verts.new(_pos(r, z, th_of(j))) for j in range(n_th)])
+            rings.append([bm.verts.new(_pos(r, z, th_of(j), seed)) for j in range(n_th)])
 
     jmax = n_th if full else n_th - 1
     for k in range(len(rings) - 1):
@@ -61,7 +61,7 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None):
                     lp[uvl].uv = K.uv_strip(th, K.ARC[kk])
 
     if not full:
-        _add_cut_face(bm, uvl, th0)
+        _add_cut_face(bm, uvl, th0, seed)
 
     bm.normal_update()
     me = bpy.data.meshes.new(name)
@@ -73,12 +73,12 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None):
     return ob
 
 
-def _add_cut_face(bm, uvl, th0):
+def _add_cut_face(bm, uvl, th0, seed=0):
     """切り口（皮=material 1）と、少し盛り上がったあん（material 2）。切り口は xz 平面。"""
     ny = -math.cos(th0)                      # 外向き法線の y 成分（th0=0 → -y, th0=π → +y）
 
-    right = [_pos(r, z, 0.0) for (r, z) in K.PROF]
-    left = [_pos(r, z, math.pi) for (r, z) in K.PROF if r > 1e-6][::-1]
+    right = [_pos(r, z, 0.0, seed) for (r, z) in K.PROF]
+    left = [_pos(r, z, math.pi, seed) for (r, z) in K.PROF if r > 1e-6][::-1]
     cap = [bm.verts.new(c) for c in right + left]
     f = bm.faces.new(cap)
     f.material_index = 1

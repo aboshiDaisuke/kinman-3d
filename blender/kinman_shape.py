@@ -6,7 +6,7 @@ Blender 側のメッシュ生成 (kinman_build.py) と、テクスチャ生成 (
 import math
 
 R, H = 2.30, 1.62
-RB, RT, TAPER, DOME = 0.14, 0.32, 0.035, 0.035
+RB, RT, TAPER, DOME = 0.12, 0.2, 0.025, 0.022
 
 
 def _profile():
@@ -56,29 +56,41 @@ def profile_at_arc(s):
     return PROF[K_TOP]
 
 
-# ---- 個体差（ゆがみ）: 全ピース共通の1個体 ----
+# ---- 個体差（ゆがみ）----
+# seed=0 がサイトで使う基準の1個体。撮影用に seed を変えて別の個体を作れる。
 _W_PHASE = (1.3, 4.1, 2.2, 5.6, 0.7)
 _W_AMP = (0.007, 0.004, 0.009, 0.006)
 
 
-def wobble(r, z, th):
-    rr = r * (1 + _W_AMP[0] * math.sin(2 * th + _W_PHASE[0]) + _W_AMP[1] * math.sin(3 * th + _W_PHASE[1]))
+def _wobble_params(seed):
+    if seed == 0:
+        return _W_PHASE, _W_AMP, 1.0
+    import random
+    rnd = random.Random(seed)
+    phase = tuple(rnd.uniform(0, 2 * math.pi) for _ in range(5))
+    amp = tuple(a * rnd.uniform(0.6, 1.5) for a in _W_AMP)
+    return phase, amp, 1 + rnd.uniform(-0.035, 0.035)   # 厚みの個体差
+
+
+def wobble(r, z, th, seed=0):
+    ph, am, hs = _wobble_params(seed)
+    rr = r * (1 + am[0] * math.sin(2 * th + ph[0]) + am[1] * math.sin(3 * th + ph[1]))
     zn = z / H
-    zz = z * (1 + _W_AMP[2] * math.sin(th + _W_PHASE[2]) * zn)
+    zz = z * hs * (1 + am[2] * math.sin(th + ph[2]) * zn)
     # 上面のゆるいうねり（中心ほど大きい）
     if z > H - RT:
         w = min(1.0, (z - (H - RT)) / RT)
-        zz += w * _W_AMP[3] * (math.sin(2.3 * th + _W_PHASE[3]) * (r / R) + 0.6 * math.cos(1.7 * r + _W_PHASE[4]))
+        zz += w * am[3] * (math.sin(2.3 * th + ph[3]) * (r / R) + 0.6 * math.cos(1.7 * r + ph[4]))
     return rr, zz
 
 
 # ---- あん（切り口の断面形）----
 # 切り口は xz 平面。s = x（cm）, z = 高さ。超楕円を少しゆがめた形。
-AN_AX = R - 0.21
-AN_ZLO, AN_ZHI = 0.19, H - 0.22
+AN_AX = R - 0.13
+AN_ZLO, AN_ZHI = 0.12, H - 0.13
 AN_ZC = (AN_ZLO + AN_ZHI) / 2
 AN_AZ = (AN_ZHI - AN_ZLO) / 2
-AN_N = 4.2
+AN_N = 5.0
 _AN_MOD = ((2, 0.018, 0.4), (3, 0.012, 2.1), (5, 0.008, 4.4), (7, 0.006, 1.0), (11, 0.004, 5.2))
 
 

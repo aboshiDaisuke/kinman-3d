@@ -4,6 +4,8 @@
 
 **公開ページ:** https://abs-mart.net/kinman-3d/
 
+![並べたところ](renders/kinman_04_rows.png)
+
 ![全体](renders/kinman_01_overview.png)
 
 ## 操作
@@ -20,16 +22,17 @@
 | --- | --- |
 | `site/` | 公開ページ（three.js）。`models/kinman.glb` がモデル本体 |
 | `blender/kinman_shape.py` | 形・UV 配置の定義（寸法、ゆがみ、あんの断面形） |
-| `blender/kinman_build.py` | Blender 内でメッシュを生成する |
-| `tools/gen_textures.py` | 色・粗さ・法線テクスチャ（4096px）を numpy で生成する |
-| `make_stamp.py` | 焼き印のマスク画像を生成する（macOS のフォントを使用） |
+| `blender/kinman_build.py` | Blender 内でメッシュを生成する（seed で個体差） |
+| `blender/photo_setup.py` | 撮影用マテリアル（個体ごとに焼き色・焼き印の位置と濃さを変える） |
+| `tools/gen_textures.py` | 色・粗さ・法線テクスチャ（4096px）を numpy で生成する。焼き印入り（サイト用）と焼き印なし（撮影用）の2組 |
+| `make_stamp.py` | 焼き印のマスク画像を生成する（macOS の游教科書体を使用） |
 | `renders/` | Blender（Cycles）での静止画 |
 
 ## 作り直すとき
 
 ```sh
 python3 make_stamp.py            # textures/stamp_mask.png
-python3 tools/gen_textures.py    # textures/kinman_{color,rough,normal}.png
+python3 tools/gen_textures.py    # textures/kinman_{color,rough,normal}[_base].png
 ```
 
 その後 Blender で `blender/kinman_build.py` を実行してメッシュを作り、テクスチャを貼って glTF（`site/models/kinman.glb`）に書き出します。
