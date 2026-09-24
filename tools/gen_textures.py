@@ -298,32 +298,31 @@ p3 = np.stack([sx.ravel(), np.zeros(sx.size), z.ravel()], 1).astype(np.float32)
 n1 = fbm(p3, 3.0, 4, seed=71).reshape(h, w)
 n2 = fbm(p3, 40.0, 3, seed=83).reshape(h, w)
 n3 = fbm(p3, 160.0, 2, seed=97).reshape(h, w)
-# 包丁で切った跡: 横方向に長く伸びた筋
-p_knife = np.stack([sx.ravel() * 1.2, np.zeros(sx.size), z.ravel() * 90.0], 1).astype(np.float32)
-knife = fbm(p_knife, 1.0, 3, seed=113).reshape(h, w)
-
-# カステラ生地: 薄い層の中の細かい気泡
+# カステラ生地: 薄い層の中の細かい気泡。手で割ると気泡がちぎれて口を開ける
 crumb_pores = (blobs((h, w), 40 * tu * tv, (0.02 / tv, 0.02 / tu), (0.3, 0.7))
-               + blobs((h, w), 6.0 * tu * tv, (0.045 / tv, 0.045 / tu), (0.4, 0.9))
-               + blobs((h, w), 0.4 * tu * tv, (0.09 / tv, 0.09 / tu), (0.5, 1.0)))
-crumb_pores = np.clip(crumb_pores, 0, 1.2)
+               + blobs((h, w), 8.0 * tu * tv, (0.045 / tv, 0.045 / tu), (0.4, 1.0))
+               + blobs((h, w), 0.8 * tu * tv, (0.08 / tv, 0.08 / tu), (0.6, 1.0)))
+crumb_pores = np.clip(crumb_pores, 0, 1.3)
+# ちぎれた生地の毛羽立ち（明るい小さな粒）
+fluff = blobs((h, w), 12.0 * tu * tv, (0.025 / tv, 0.025 / tu), (0.4, 1.0), clip=1.0)
 crumb = srgb(244, 212, 146)[None, None] * (1 + 0.035 * n1 + 0.02 * n2)[..., None]
-crumb = crumb * (1 - crumb_pores[..., None] * np.array([0.03, 0.06, 0.11], np.float32))
+crumb = crumb * (1 - crumb_pores[..., None] * np.array([0.05, 0.09, 0.15], np.float32))
+crumb = crumb + fluff[..., None] * 0.05 * srgb(255, 244, 214)[None, None]
 skin = smooth(0.05, 0.2, d_out)[..., None]                     # ごく薄い焼き皮の線
 crumb = srgb(196, 124, 62)[None, None] * (1 - skin) + crumb * skin
 dense = (1 - smooth(0.0, 0.18, d_an_out))[..., None] * 0.35   # あんに接する所は少し詰まる
 crumb = crumb * (1 - dense) + srgb(232, 196, 128)[None, None] * dense
-crumb_h = -0.05 * crumb_pores + 0.006 * n2
+crumb_h = -0.08 * crumb_pores + 0.012 * n2 + 0.015 * fluff
 crumb_r = 0.78 - 0.1 * (1 - skin[..., 0]) + 0.04 * n2
 
-# 玉子入り白あん: なめらかで、ごく細かい粒と包丁の筋、まれに豆の皮
+# 玉子入り白あん: しっとりなめらかで、ちぎれた面にごく細かい粒、まれに豆の皮
 specks = blobs((h, w), 0.35 * tu * tv, (0.03 / tv, 0.03 / tu), (0.5, 1.0), clip=1.0)
-an_col = srgb(240, 220, 176)[None, None] * (1 + 0.03 * n1 + 0.015 * n2 + 0.015 * n3 + 0.005 * knife)[..., None]
+an_col = srgb(240, 220, 176)[None, None] * (1 + 0.03 * n1 + 0.015 * n2 + 0.015 * n3)[..., None]
 an_col = an_col * (1 - 0.2 * specks)[..., None] + srgb(200, 156, 96)[None, None] * (0.2 * specks)[..., None]
 rim = (1 - smooth(0.0, 0.15, d_an_in))[..., None] * 0.35
 an_col = an_col * (1 - rim) + srgb(226, 198, 146)[None, None] * rim
-an_h = 0.006 * n3 + 0.01 * n2 + 0.03 * n1 + 0.0015 * knife - 0.008 * specks
-an_r = 0.42 + 0.04 * n3 + 0.05 * n1 + 0.01 * knife
+an_h = 0.012 * n3 + 0.012 * n2 + 0.03 * n1 - 0.008 * specks
+an_r = 0.42 + 0.04 * n3 + 0.05 * n1
 
 cap_col = np.where(an[..., None], an_col, crumb)
 cap_h = np.where(an, an_h, crumb_h)

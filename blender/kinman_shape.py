@@ -108,6 +108,65 @@ def an_boundary(t):
     return AN_AX * x * m, AN_ZC + AN_AZ * y * m
 
 
+def an_rho(s, z):
+    """あんの境界を 1 とした、切り口上の点 (s, z) の「あんの内側度」（1 未満があんの中）。"""
+    X, Y = s / AN_AX, (z - AN_ZC) / AN_AZ
+    rho = (abs(X) ** AN_N + abs(Y) ** AN_N) ** (1 / AN_N)
+    return rho / (1 + an_mod(math.atan2(Y, X)))
+
+
+# ---- 割れ目（手で割った切り口のでこぼこ）----
+# 切り口の点を y 方向（切り口の法線方向）にずらす量。割れ目の近くのすべての頂点に
+# 同じずらしを掛けるので、2つの半分の切り口はぴったり噛み合い、上面の割れ線も揺れる。
+BREAK_FALLOFF = 0.4       # この距離（cm）で切り口から離れるとずらしがなくなる
+
+
+def _vhash(ix, iz, seed):
+    h = (ix * 73856093) ^ (iz * 19349663) ^ (seed * 83492791)
+    h &= 0xFFFFFFFF
+    h ^= h >> 13
+    h = (h * 1274126177) & 0xFFFFFFFF
+    h ^= h >> 16
+    return (h & 0xFFFFFF) / float(0xFFFFFF) * 2 - 1
+
+
+def vnoise2(x, z, seed):
+    """2D バリューノイズ（-1..1）。"""
+    ix, iz = math.floor(x), math.floor(z)
+    fx, fz = x - ix, z - iz
+    ux, uz = fx * fx * (3 - 2 * fx), fz * fz * (3 - 2 * fz)
+    a = _vhash(ix, iz, seed) + ux * (_vhash(ix + 1, iz, seed) - _vhash(ix, iz, seed))
+    b = _vhash(ix, iz + 1, seed) + ux * (_vhash(ix + 1, iz + 1, seed) - _vhash(ix, iz + 1, seed))
+    return a + uz * (b - a)
+
+
+def fbm2(x, z, octaves, seed):
+    amp, tot, norm = 1.0, 0.0, 0.0
+    for o in range(octaves):
+        tot += amp * vnoise2(x * 2 ** o + o * 17.13, z * 2 ** o - o * 5.71, seed + o * 101)
+        norm += amp
+        amp *= 0.5
+    return tot / norm
+
+
+def break_offset(s, z, seed=0):
+    """切り口上の点 (s, z)（cm）の y 方向のずらし（cm）。
+    大きなうねり（割れ線の揺れ）＋ あんのなだらかなちぎれ ＋ 生地の細かなむしれ。"""
+    sd = 7 + seed * 31
+    big = 0.06 * fbm2(s / 1.1, z / 0.9, 3, sd)
+    t = min(1.0, max(0.0, (an_rho(s, z) - 0.94) / 0.1))
+    w_an = 1 - t * t * (3 - 2 * t)                   # あんの中 1、生地 0
+    an = 0.05 * fbm2(s / 0.45, z / 0.35, 2, sd + 1)
+    crumb = 0.02 * fbm2(s / 0.07, z / 0.07, 2, sd + 2)
+    return big + w_an * an + (1 - w_an) * crumb
+
+
+def break_weight(dy):
+    """切り口からの距離 dy（cm）に対するずらしの効き具合（切り口で 1、離れると 0）。"""
+    t = min(1.0, abs(dy) / BREAK_FALLOFF)
+    return 1 - t * t * (3 - 2 * t)
+
+
 # ---- UV 配置（BakeUV、0..1）----
 TOP_RECT = (0.0, 0.5, 0.5, 1.0)
 BOT_RECT = (0.5, 0.75, 0.75, 1.0)

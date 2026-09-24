@@ -40,8 +40,8 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None, see
         region = "top" if k >= K.K_TOP else ("bot" if k + 1 <= K.K_BOT else "strip")
         for j in range(jmax):
             j2 = (j + 1) % n_th
-            if len(A) == 1:
-                vs, ks, js = (A[0], B[j], B[j2]), (k, k + 1, k + 1), (j, j, j + 1)
+            if len(A) == 1:              # 底の中心: 四角形と同じ向き（外向き）に巻く
+                vs, ks, js = (A[0], B[j2], B[j]), (k, k + 1, k + 1), (j, j + 1, j)
             elif len(B) == 1:
                 vs, ks, js = (A[j], A[j2], B[0]), (k, k, k + 1), (j, j + 1, j)
             else:
@@ -62,6 +62,7 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None, see
 
     if not full:
         _add_cut_face(bm, uvl, th0, seed)
+        _break(bm, seed)
 
     bm.normal_update()
     me = bpy.data.meshes.new(name)
@@ -74,46 +75,76 @@ def build_kinman(name, theta=(0.0, 2 * math.pi), steps=256, collection=None, see
 
 
 def _add_cut_face(bm, uvl, th0, seed=0):
-    """切り口（皮=material 1）と、少し盛り上がったあん（material 2）。切り口は xz 平面。"""
-    ny = -math.cos(th0)                      # 外向き法線の y 成分（th0=0 → -y, th0=π → +y）
-
+    """切り口。中心から放射状に輪を重ねたメッシュで、外側の輪（皮に接する生地 = material 1）と
+    内側（あん = material 2）に分ける。外周は側面の頂点と同じ位置に置くので隙間はできない。"""
     right = [_pos(r, z, 0.0, seed) for (r, z) in K.PROF]
     left = [_pos(r, z, math.pi, seed) for (r, z) in K.PROF if r > 1e-6][::-1]
-    cap = [bm.verts.new(c) for c in right + left]
-    f = bm.faces.new(cap)
-    f.material_index = 1
-    f.smooth = False
-    for lp in f.loops:
-        co = lp.vert.co
-        lp[uvl].uv = K.uv_cap(co.x / CM, co.z / CM)
-    bmesh.ops.triangulate(bm, faces=[f], quad_method='BEAUTY', ngon_method='BEAUTY')
-
-    nb, nr = 160, 12
-    bnd = [K.an_boundary(2 * math.pi * i / nb) for i in range(nb)]
+    outer = [(x / CM, z / CM) for (x, _y, z) in right + left]
     zc = K.AN_ZC
 
-    def pt(s, z, bulge):
-        return (s * CM, bulge * ny * CM, z * CM)
+    # 中心から見た向き phi ごとの、あんの境界までの距離（境界線を細かく引いて角度で補間）
+    samples = []
+    for i in range(2048):
+        s_, z_ = K.an_boundary(2 * math.pi * i / 2048)
+        samples.append((math.atan2(z_ - zc, s_), math.hypot(s_, z_ - zc)))
+    samples.sort()
+    samples = [(a - 2 * math.pi, d) for a, d in samples[-2:]] + samples + [(a + 2 * math.pi, d) for a, d in samples[:2]]
 
-    center = bm.verts.new(pt(0, zc, 0.05))
-    center_uv = K.uv_cap(0, zc)
-    prev = None
-    for k in range(1, nr + 1):
-        sc = k / nr
-        bulge = 0.006 + 0.044 * (1 - sc ** 2.5)
-        ring = [(bm.verts.new(pt(x * sc, zc + (z - zc) * sc, bulge)), K.uv_cap(x * sc, zc + (z - zc) * sc)) for (x, z) in bnd]
-        for i in range(nb):
-            i2 = (i + 1) % nb
-            if prev is None:
-                quad = ((center, center_uv), ring[i2], ring[i])
+    def an_dist(phi):
+        lo, hi = 0, len(samples) - 1
+        while hi - lo > 1:
+            mid = (lo + hi) // 2
+            if samples[mid][0] <= phi:
+                lo = mid
             else:
-                quad = (prev[i], prev[i2], ring[i2], ring[i])
+                hi = mid
+        (a0, d0), (a1, d1) = samples[lo], samples[hi]
+        return d0 + (d1 - d0) * (phi - a0) / max(a1 - a0, 1e-9)
+
+    NC, NA = 6, 22                            # 生地の輪の数、あんの輪の数
+    rings = []                                # 外側 → 内側。各輪は外周と同じ数の点
+    for (xo, zo) in outer:
+        phi = math.atan2(zo - zc, xo)
+        da = min(an_dist(phi), math.hypot(xo, zo - zc) - 0.02)
+        xa, za = da * math.cos(phi), zc + da * math.sin(phi)
+        col = []
+        for k in range(NC + 1):               # 外周 → あんの境界
+            t = k / NC
+            col.append((xo + (xa - xo) * t, zo + (za - zo) * t))
+        for k in range(1, NA):                # あんの境界 → 中心の手前（内側ほど細かく）
+            t = (k / NA) ** 0.85
+            col.append((xa * (1 - t), za + (zc - za) * t))
+        rings.append(col)
+
+    def vert(sz):
+        v = bm.verts.new((sz[0] * CM, 0.0, sz[1] * CM))
+        return v, K.uv_cap(*sz)
+
+    grid = [[vert(p) for p in col] for col in rings]
+    center = vert((0.0, zc))
+    n = len(outer)
+    depth = len(rings[0])
+    for i in range(n):
+        i2 = (i + 1) % n
+        for k in range(depth):
+            mat = 1 if k < NC else 2
+            if k + 1 < depth:
+                quad = (grid[i][k], grid[i2][k], grid[i2][k + 1], grid[i][k + 1])
+            else:
+                quad = (grid[i][k], grid[i2][k], center)
             f = bm.faces.new([v for v, _ in quad])
-            f.material_index = 2
+            f.material_index = mat
             f.smooth = True
             for lp, (_, uv) in zip(f.loops, quad):
                 lp[uvl].uv = uv
-        prev = ring
+
+
+def _break(bm, seed=0):
+    """割れ目のでこぼこ: 切り口の近くの頂点を y 方向にずらす（kinman_shape.break_offset）。"""
+    for v in bm.verts:
+        w = K.break_weight(v.co.y / CM)
+        if w > 0:
+            v.co.y += K.break_offset(v.co.x / CM, v.co.z / CM, seed) * w * CM
 
 
 def _fix_cut_normals(ob, th0):
