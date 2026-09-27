@@ -235,6 +235,51 @@ button.icon {
 button.icon[aria-pressed="true"] { color: var(--accent); }
 button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.movie-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.movie-btn svg { color: var(--accent); }
+
+/* ---- ムービー ---- */
+.movie {
+  width: min(100vw, calc(100dvh * 16 / 9), 1280px);
+  max-width: 100vw;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: #000;
+  overflow: visible;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
+}
+.movie::backdrop {
+  background: rgba(18, 12, 8, 0.86);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.movie[open] { animation: movie-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes movie-in { from { opacity: 0; transform: scale(0.94); } }
+.movie video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.movie-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  width: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: #f3e7d6;
+  background: rgba(0, 0, 0, 0.45);
+}
+.movie-close:hover { background: rgba(0, 0, 0, 0.7); }
+
 #split .when-open { display: none; }
 #split[aria-pressed="true"] .when-open { display: inline; }
 #split[aria-pressed="true"] .when-closed { display: none; }
@@ -277,5 +322,5 @@ button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  button.icon[aria-pressed="true"] svg, .loading-mark { animation: none; }
+  button.icon[aria-pressed="true"] svg, .loading-mark, .movie[open] { animation: none; }
 }

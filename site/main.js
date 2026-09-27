@@ -353,6 +353,22 @@ splitBtn.addEventListener("click", () => {
   zoomTo(splitOpen ? 0.215 : 0.17, 1300);
 });
 
+// ---------------------------------------------------------------- movie
+// ボタンで開く15秒ムービー。見終わったら閉じて3Dに戻る
+const movie = document.getElementById("movie");
+const movieVideo = document.getElementById("movie-video");
+document.getElementById("movie-open").addEventListener("click", () => {
+  movie.showModal();
+  movieVideo.currentTime = 0;
+  movieVideo.play().catch(() => {});
+});
+document.getElementById("movie-close").addEventListener("click", () => movie.close());
+movie.addEventListener("click", (e) => {
+  if (e.target === movie) movie.close(); // 動画の外側をクリックで閉じる
+});
+movie.addEventListener("close", () => movieVideo.pause());
+movieVideo.addEventListener("ended", () => setTimeout(() => movie.open && movie.close(), 600));
+
 // ---------------------------------------------------------------- autorotate
 const spinBtn = document.getElementById("spin");
 let autoRotate = !reduceMotion;

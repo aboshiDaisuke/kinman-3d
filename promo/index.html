@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>金萬 15秒</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Shippori+Mincho+B1:wght@800&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=block" rel="stylesheet" />
+  <link rel="stylesheet" href="promo.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="viewport">
+    <div id="stage">
+      <div id="cam">
+        <div id="bg"></div>
+        <div id="sunburst"></div>
+        <div id="stripes"></div>
+        <div class="iris" id="iris-a"></div>
+        <div class="iris" id="iris-b"></div>
+        <div id="disc"></div>
+        <div class="marquee" id="mq-mid"></div>
+        <div class="marquee" id="mq-top"></div>
+        <div class="marquee" id="mq-bot"></div>
+        <canvas id="gl" width="1920" height="1080"></canvas>
+        <canvas id="fx" width="1920" height="1080"></canvas>
+        <svg id="ring" viewBox="0 0 1920 1080" width="1920" height="1080">
+          <circle id="ring-a" cx="0" cy="0" r="100" />
+          <circle id="ring-b" cx="0" cy="0" r="100" />
+        </svg>
+        <div id="fg"></div>
+      </div>
+      <div id="wipes"></div>
+      <div id="flash"></div>
+      <div id="vignette"></div>
+      <div id="grain"></div>
+    </div>
+  </div>
+  <script type="module" src="promo.js"></script>
+</body>
+</html>

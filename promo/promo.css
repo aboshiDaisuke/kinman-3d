@@ -1,0 +1,148 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+
+#viewport {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* 1920×1080 の固定キャンバス。プレビューでは画面に合わせて縮める */
+#stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  flex: none;
+  overflow: hidden;
+  background: #170e08;
+  -webkit-font-smoothing: antialiased;
+}
+
+#cam {
+  position: absolute;
+  inset: -40px;
+  padding: 40px;
+  transform-origin: 50% 50%;
+}
+
+#bg, #sunburst, #stripes, #gl, #fx, #ring, #fg {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 1920px;
+  height: 1080px;
+}
+#bg { inset: 0; width: auto; height: auto; left: 0; top: 0; }
+
+#stripes {
+  background: repeating-linear-gradient(-50deg, rgba(138, 59, 23, 0.07) 0 34px, transparent 34px 68px);
+  background-size: 200% 200%;
+}
+
+#disc {
+  position: absolute;
+  border-radius: 50%;
+  left: 0;
+  top: 0;
+}
+
+.marquee {
+  position: absolute;
+  left: 40px;
+  top: 0;
+  white-space: nowrap;
+  font-family: "Anton", "Impact", sans-serif;
+  line-height: 1;
+  color: transparent;
+}
+
+#ring { overflow: visible; }
+#ring circle { fill: none; }
+
+.t {
+  position: absolute;
+  white-space: nowrap;
+  line-height: 1;
+  will-change: transform;
+}
+.t span { display: inline-block; }
+.t.v { writing-mode: vertical-rl; }
+.t.stroke {
+  -webkit-text-stroke: 12px #2b1d14;
+  paint-order: stroke fill;
+}
+.goldfill {
+  background-image: linear-gradient(100deg, #b87a34 0%, #f3cf8a 30%, #d59c52 45%, #fff6dc 50%, #d59c52 55%, #f0c67c 72%, #a86a2a 100%);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.box {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.iris {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2400px;
+  height: 2400px;
+  margin: -1200px 0 0 -1200px;
+  border-radius: 50%;
+  visibility: hidden;
+}
+
+#wipes {
+  position: absolute;
+  inset: -60%;
+  pointer-events: none;
+}
+#wipes div {
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+#wipes span {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -0.5em;
+  white-space: nowrap;
+  font-family: "Anton", "Shippori Mincho B1", sans-serif;
+  font-weight: 800;
+  font-size: 300px;
+  line-height: 1;
+  color: rgba(255, 246, 225, 0.16);
+}
+
+#flash {
+  position: absolute;
+  inset: 0;
+  background: #fff7e8;
+  opacity: 0;
+}
+
+#vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(20, 8, 2, 0.38) 100%);
+  pointer-events: none;
+}
+
+#grain {
+  position: absolute;
+  inset: -100px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}

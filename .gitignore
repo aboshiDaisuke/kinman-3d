@@ -6,3 +6,6 @@ textures/kinman_*.png
 __pycache__/
 .playwright-mcp/
 .DS_Store
+
+# ムービーの書き出し結果（promo/render.mjs で再生成できる。サイト用は site/movie/）
+promo/out/
