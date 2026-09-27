@@ -362,12 +362,41 @@ document.getElementById("movie-open").addEventListener("click", () => {
   movieVideo.currentTime = 0;
   movieVideo.play().catch(() => {});
 });
-document.getElementById("movie-close").addEventListener("click", () => movie.close());
+// 閉じるときは、ふわっと薄くしてから閉じる（見終わったとき・×・Esc・外側のクリックのどれでも）
+function closeMovie() {
+  if (!movie.open || movie.classList.contains("closing")) return;
+  const done = () => {
+    movie.classList.remove("closing");
+    movie.close();
+  };
+  if (reduceMotion) return done();
+  movie.classList.add("closing");
+  movie.addEventListener("animationend", done, { once: true });
+}
+document.getElementById("movie-close").addEventListener("click", closeMovie);
 movie.addEventListener("click", (e) => {
-  if (e.target === movie) movie.close(); // 動画の外側をクリックで閉じる
+  if (e.target === movie) closeMovie(); // 動画の外側をクリックで閉じる
+});
+movie.addEventListener("cancel", (e) => {
+  e.preventDefault(); // Esc でもいきなり消さない
+  closeMovie();
 });
 movie.addEventListener("close", () => movieVideo.pause());
-movieVideo.addEventListener("ended", () => setTimeout(() => movie.open && movie.close(), 600));
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+// 最後の題字を少し見せてから閉じる。全画面で見ていたら、先に全画面を抜けてから薄くする
+movieVideo.addEventListener("ended", async () => {
+  const fs = document.fullscreenElement || document.webkitFullscreenElement;
+  if (fs) {
+    await wait(700);
+    await (document.exitFullscreen || document.webkitExitFullscreen)?.call(document)?.catch?.(() => {});
+    await wait(500);
+  } else if (movieVideo.webkitDisplayingFullscreen) {
+    await wait(700);
+    movieVideo.webkitExitFullscreen();
+    await wait(500);
+  } else await wait(900);
+  closeMovie();
+});
 
 // ---------------------------------------------------------------- autorotate
 const spinBtn = document.getElementById("spin");

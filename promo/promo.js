@@ -807,7 +807,9 @@ function updateLayers(t, km) {
   // 斜めストライプ（並びのシーン）
   if (t >= 10.0 && t < 12.7) {
     stripes.style.visibility = "visible";
-    stripes.style.backgroundPosition = `${(t * 90).toFixed(1)}px 0`;
+    // 横に動かしたときの縞の1周期は 68px / sin(50°)。その幅で折り返せば継ぎ目は出ない
+    const period = 68 / Math.sin((50 * Math.PI) / 180);
+    stripes.style.transform = `translateX(${((t * 90) % period).toFixed(2)}px)`;
   } else stripes.style.visibility = "hidden";
 
   // お菓子の後ろの円

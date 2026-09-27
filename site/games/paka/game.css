@@ -1,0 +1,194 @@
+/* パカッと割り */
+
+/* 刃の軌跡・集中線を描く 2D の層（3D の上、判定の文字の下） */
+.pk-fx {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* 割れた瞬間のフラッシュ */
+.pk-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--fx, 50%) var(--fy, 50%), #fffdf6 0%, rgba(255, 244, 222, 0.85) 35%, rgba(255, 236, 205, 0) 75%);
+}
+.pk-flash.on { animation: pk-flash 0.32s ease-out forwards; }
+@keyframes pk-flash {
+  0% { opacity: var(--fa, 0.9); }
+  100% { opacity: 0; }
+}
+
+/* ラウンドの見出し（AE 風に斜めから叩きつけて、横へ抜ける） */
+.pk-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: calc(64px + env(safe-area-inset-top));
+  z-index: 12;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+.pk-banner[hidden] { display: none; }
+.pk-banner-num {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--anton);
+  font-size: 58px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--accent);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 8px var(--paper);
+}
+.pk-banner-num small {
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.2em;
+  color: var(--ink);
+}
+.pk-banner-num em { font-style: normal; font-size: 26px; color: var(--ink-soft); }
+.pk-banner-note {
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  box-shadow: var(--shadow);
+}
+.pk-banner.on .pk-banner-num { animation: pk-slam 1.7s cubic-bezier(0.2, 0.9, 0.2, 1) forwards; }
+.pk-banner.on .pk-banner-note { animation: pk-note 1.7s cubic-bezier(0.2, 0.9, 0.2, 1) forwards; }
+@keyframes pk-slam {
+  0% { opacity: 0; transform: translateX(-60px) skewX(-18deg) scale(1.8); filter: blur(8px); }
+  14% { opacity: 1; transform: translateX(6px) skewX(4deg) scale(0.96); filter: blur(0); }
+  24% { transform: none; }
+  78% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateX(80px) skewX(-12deg); filter: blur(4px); }
+}
+@keyframes pk-note {
+  0%, 10% { opacity: 0; transform: translateY(10px) scaleX(0.4); }
+  24% { opacity: 1; transform: none; }
+  80% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+/* 下のひとこと（そのラウンドのやること） */
+.pk-hint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 9;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 0.3s;
+}
+.pk-hint[hidden] { display: none; }
+.pk-hint-main {
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: var(--shadow);
+}
+.pk-hint-keys { font-size: 12px; letter-spacing: 0.12em; color: var(--ink-soft); }
+.pk-hint-keys kbd {
+  font: inherit;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 5px;
+  border: 1px solid var(--line);
+  background: var(--chip);
+}
+@media (hover: none) {
+  .pk-hint-keys { display: none; }
+}
+
+/* 結果画面のラウンドごとの記録 */
+.pk-log {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+  margin: 0 auto;
+  max-width: 340px;
+}
+.pk-log-row {
+  display: grid;
+  grid-template-columns: 1.6em 1fr auto;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  text-align: left;
+}
+.pk-log-n { font-family: var(--anton); color: var(--ink-soft); font-size: 13px; }
+.pk-log-j { font-weight: 700; font-size: 13px; }
+.pk-log-j.great { color: var(--great); }
+.pk-log-j.good { color: var(--good); }
+.pk-log-j.ok { color: var(--ok); }
+.pk-log-j.bad { color: var(--bad); }
+.pk-log-p { font-family: var(--mincho); font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+.pk-sum { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-soft); letter-spacing: 0.08em; }
+
+@media (max-width: 640px) {
+  .pk-banner { top: calc(58px + env(safe-area-inset-top)); }
+  .pk-banner-num { font-size: 46px; }
+  .pk-banner-num small { font-size: 18px; }
+  .pk-banner-note { font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-banner.on .pk-banner-num, .pk-banner.on .pk-banner-note { animation-duration: 1.7s; animation-timing-function: steps(1, end); }
+  .pk-flash.on { animation: none; }
+}
+
+/* 制限時間のゲージ（下のひとことの上） */
+.pk-timer {
+  --p: 1;
+  position: fixed;
+  left: 50%;
+  bottom: calc(104px + env(safe-area-inset-bottom));
+  z-index: 11;
+  width: min(320px, 64vw);
+  height: 10px;
+  margin-left: calc(min(320px, 64vw) / -2);
+  border-radius: 999px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  pointer-events: none;
+}
+.pk-timer[hidden] { display: none; }
+.pk-timer i {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p));
+  background: var(--gold);
+  border-radius: inherit;
+}
+.pk-timer.low i { background: var(--great); animation: pk-timer-blink 0.25s steps(2) infinite; }
+@keyframes pk-timer-blink { 50% { opacity: 0.55; } }
+@media (prefers-reduced-motion: reduce) {
+  .pk-timer.low i { animation: none; }
+}

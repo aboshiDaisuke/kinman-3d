@@ -1,0 +1,66 @@
+/* お土産箱詰め */
+.hako-controls[hidden],
+.hako-hint[hidden] { display: none; }
+
+.hako-controls .g-btn { min-width: 44px; }
+.hako-rot {
+  width: 52px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 0;
+  touch-action: none;
+}
+.hako-controls [data-act="pack"] { min-width: 108px; }
+.hako-hint { bottom: calc(72px + env(safe-area-inset-bottom)); }
+
+/* 判定の文字の下に添える小さな字（ずれの角度、連続） */
+.g-pop small {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--gothic);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  color: var(--ink-soft);
+  -webkit-text-stroke: 4px var(--paper);
+}
+/* 最後の見返しで押す検品の印（美・良・可・歪・裏） */
+.g-pop.mark {
+  display: grid;
+  place-items: center;
+  width: 1.8em;
+  height: 1.8em;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0;
+  border: 3px double currentColor;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  -webkit-text-stroke: 0;
+  animation: hako-mark 0.36s cubic-bezier(0.2, 0.9, 0.2, 1.2) both;
+}
+.g-pop.mark.leave { animation: hako-mark-out 0.3s ease-in forwards; }
+@keyframes hako-mark-out { to { opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scale(1.4); } }
+.g-pop.mark.great { font-size: 26px; }
+@keyframes hako-mark {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scale(2.4); }
+  60% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(1); }
+}
+
+.hako-sum { margin: 0 0 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; font-size: 13px; }
+.hako-sum span { white-space: nowrap; color: var(--ink-soft); }
+.hako-sum b { font-family: var(--mincho); font-size: 17px; color: var(--ink); margin-left: 2px; }
+
+@media (max-width: 380px) {
+  .hako-controls { gap: 6px; }
+  .hako-controls .g-btn:not(.hako-rot) { padding: 12px 16px; letter-spacing: 0.06em; }
+  .hako-controls [data-act="pack"] { min-width: 92px; }
+}
+.hako-rot svg { display: block; margin: auto; }
+.hako-mirror { display: block; transform: scaleX(-1); }
+@media (max-height: 519px) {
+  .hako-hint { display: none; }
+}

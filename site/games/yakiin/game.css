@@ -1,0 +1,44 @@
+/* 押している長さのゲージ（焼きごての横に出る輪）。0〜0.9 秒を一周に割り当てる */
+.yk-gauge {
+  --p: 0%;
+  --fill: #8a8078;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 12;
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+}
+.yk-gauge[hidden] { display: none; }
+.yk-gauge-zones, .yk-gauge-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+/* 外側の細い輪: 灰（薄い）→ 金（ちょうど）→ 赤（焦げ） */
+.yk-gauge-zones {
+  background: conic-gradient(rgba(111, 90, 73, 0.45) 0 13.3%, #d9a24e 13.3% 55.6%, #b8321f 55.6% 100%);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%, #000 70%, transparent 71%);
+  mask: radial-gradient(circle, transparent 60%, #000 61%, #000 70%, transparent 71%);
+}
+.yk-gauge-fill {
+  inset: 8px;
+  background: conic-gradient(var(--fill) 0 var(--p), rgba(255, 252, 246, 0.55) var(--p) 100%);
+  -webkit-mask: radial-gradient(circle, transparent 56%, #000 57%);
+  mask: radial-gradient(circle, transparent 56%, #000 57%);
+  box-shadow: 0 6px 16px -6px rgba(60, 34, 14, 0.4);
+}
+.yk-gauge-label {
+  position: relative;
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 4px var(--paper);
+  white-space: nowrap;
+}

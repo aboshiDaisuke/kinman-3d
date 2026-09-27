@@ -39,9 +39,11 @@ html, body {
 }
 #bg { inset: 0; width: auto; height: auto; left: 0; top: 0; }
 
+/* 背景を繰り返すと継ぎ目が出るので、1枚の大きな面にして要素ごと動かす（横に 1 周期ぶん大きい） */
 #stripes {
+  left: -60px;
+  width: 2040px;
   background: repeating-linear-gradient(-50deg, rgba(138, 59, 23, 0.07) 0 34px, transparent 34px 68px);
-  background-size: 200% 200%;
 }
 
 #disc {

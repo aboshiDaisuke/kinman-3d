@@ -241,6 +241,25 @@ button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
   gap: 7px;
 }
 .movie-btn svg { color: var(--accent); }
+/* ミニゲームへのリンク（ボタンと同じ見た目） */
+.play-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.15s;
+}
+.play-link:hover { background: var(--chip-hover); }
+.play-link:active { transform: scale(0.96); }
+.play-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.play-link svg { color: var(--accent); }
 
 /* ---- ムービー ---- */
 .movie {
@@ -258,8 +277,15 @@ button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
-.movie[open] { animation: movie-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.movie[open] { animation: movie-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.movie[open]::backdrop { animation: movie-backdrop-in 0.45s ease; }
 @keyframes movie-in { from { opacity: 0; transform: scale(0.94); } }
+@keyframes movie-backdrop-in { from { opacity: 0; } }
+/* 閉じるときは、動画と暗幕をいっしょにゆっくり薄くする */
+.movie.closing { animation: movie-out 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.movie.closing::backdrop { animation: movie-backdrop-out 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes movie-out { to { opacity: 0; transform: scale(0.97); } }
+@keyframes movie-backdrop-out { to { opacity: 0; } }
 .movie video {
   display: block;
   width: 100%;
@@ -318,9 +344,15 @@ button.icon[aria-pressed="true"] svg { animation: spin 3.2s linear infinite; }
   .reading { font-size: 11px; letter-spacing: 0.3em; padding: 0; }
   .bottom { gap: 10px; }
   .dock { gap: 8px; }
-  button { padding: 10px 13px; letter-spacing: 0.06em; }
+  button, .play-link { padding: 10px 13px; letter-spacing: 0.06em; }
+}
+/* 操作ボタンが1行に収まるよう、狭い画面ではアイコンを省く */
+button, .play-link { white-space: nowrap; }
+@media (max-width: 420px) {
+  .movie-btn svg, .play-link svg { display: none; }
+  .actions button, .actions .play-link { padding-inline: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  button.icon[aria-pressed="true"] svg, .loading-mark, .movie[open] { animation: none; }
+  button.icon[aria-pressed="true"] svg, .loading-mark, .movie[open], .movie[open]::backdrop { animation: none; }
 }

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>金萬ミニゲーム</title>
+  <meta name="description" content="秋田銘菓・金萬の3Dモデルで遊ぶミニゲーム集（非公式ファンメイド）。焼き印、タワー、箱詰め、パカッと割り、オセロ。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2215%22 fill=%22%23d99a58%22/%3E%3Cellipse cx=%2216%22 cy=%2216%22 rx=%226%22 ry=%228.5%22 fill=%22none%22 stroke=%22%238a3b17%22 stroke-width=%222%22/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="shared/ui.css" />
+  <link rel="stylesheet" href="hub.css" />
+</head>
+<body class="hub">
+  <header class="hub-head">
+    <a class="g-back" href="../"><span aria-hidden="true">←</span> 3Dで眺める</a>
+    <p class="hub-kicker">秋田銘菓</p>
+    <h1 class="hub-title"><span>金萬</span>ミニゲーム</h1>
+    <p class="hub-lead">3Dの金萬で遊ぶ、ちいさなゲームが5つ。<br />どれも1回1分くらいです。</p>
+  </header>
+
+  <main class="hub-grid">
+    <a class="hub-card" href="yakiin/" data-id="yakiin" data-unit="点">
+      <span class="hub-thumb"><img src="yakiin/thumb.webp" alt="" loading="lazy" width="640" height="400" /></span>
+      <span class="hub-body">
+        <span class="hub-tag">30秒 ・ タイミング</span>
+        <span class="hub-name">焼き印</span>
+        <span class="hub-desc">流れてくる金萬に、ちょうどいい長さで焼き印を押す。短いとうすく、長いと焦げる。</span>
+        <span class="hub-best" hidden></span>
+      </span>
+    </a>
+    <a class="hub-card" href="tower/" data-id="tower" data-unit="段">
+      <span class="hub-thumb"><img src="tower/thumb.webp" alt="" loading="lazy" width="640" height="400" /></span>
+      <span class="hub-body">
+        <span class="hub-tag">積み上げ ・ ワンタップ</span>
+        <span class="hub-name">金萬タワー</span>
+        <span class="hub-desc">揺れる金萬を落として、どこまで高く積めるか。ずれるほど塔がぐらぐら。</span>
+        <span class="hub-best" hidden></span>
+      </span>
+    </a>
+    <a class="hub-card" href="hako/" data-id="hako" data-unit="点">
+      <span class="hub-thumb"><img src="hako/thumb.webp" alt="" loading="lazy" width="640" height="400" /></span>
+      <span class="hub-body">
+        <span class="hub-tag">12個 ・ 向きそろえ</span>
+        <span class="hub-name">お土産箱詰め</span>
+        <span class="hub-desc">向きも裏表もばらばらの金萬を、焼き印をまっすぐにそろえて箱に詰める。</span>
+        <span class="hub-best" hidden></span>
+      </span>
+    </a>
+    <a class="hub-card" href="paka/" data-id="paka" data-unit="点">
+      <span class="hub-thumb"><img src="paka/thumb.webp" alt="" loading="lazy" width="640" height="400" /></span>
+      <span class="hub-body">
+        <span class="hub-tag">8回 ・ スワイプ</span>
+        <span class="hub-name">パカッと割り</span>
+        <span class="hub-desc">線に沿ってスワイプして、まっぷたつに。中から玉子入りの白あん。</span>
+        <span class="hub-best" hidden></span>
+      </span>
+    </a>
+    <a class="hub-card" href="othello/" data-id="othello" data-unit="勝" data-prefix="CPUに通算">
+      <span class="hub-thumb"><img src="othello/thumb.webp" alt="" loading="lazy" width="640" height="400" /></span>
+      <span class="hub-body">
+        <span class="hub-tag">対戦 ・ CPUか2人で</span>
+        <span class="hub-name">金萬オセロ</span>
+        <span class="hub-desc">石は金萬。焼き印の表と、底の裏。……どっちがどっちか、わかりますか。</span>
+        <span class="hub-best" hidden></span>
+      </span>
+    </a>
+  </main>
+
+  <footer class="hub-foot">
+    <p>非公式のファンメイド作品です。本物の商品・ロゴとは関係ありません。記録はこの端末のブラウザにだけ保存されます。</p>
+  </footer>
+
+  <script type="module">
+    import { getBest } from "./shared/ui.js";
+    for (const card of document.querySelectorAll(".hub-card")) {
+      const best = getBest(card.dataset.id);
+      if (best === null) continue;
+      const el = card.querySelector(".hub-best");
+      el.textContent = `${card.dataset.prefix ?? "ベスト"} ${best}${card.dataset.unit}`;
+      el.hidden = false;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>焼き印 | 金萬ミニゲーム</title>
+  <meta name="description" content="流れてくる金萬に、ちょうどいいタイミングと長さで焼き印を押す30秒のミニゲーム（非公式ファンメイド）" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2215%22 fill=%22%23d99a58%22/%3E%3Cellipse cx=%2216%22 cy=%2216%22 rx=%226%22 ry=%228.5%22 fill=%22none%22 stroke=%22%238a3b17%22 stroke-width=%222%22/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../shared/ui.css" />
+  <link rel="stylesheet" href="game.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas class="g-canvas" id="view" aria-label="ベルトで流れてくる金萬と焼きごて。長押しで焼き印を押します。Space キーでも操作できます。"></canvas>
+  <div class="yk-gauge" id="gauge" hidden>
+    <div class="yk-gauge-zones"></div>
+    <div class="yk-gauge-fill"></div>
+    <span class="yk-gauge-label" id="gauge-label"></span>
+  </div>
+  <p class="g-hint" id="hint" hidden>長押しで焼きごてを下ろす ・ 輪が金色のうちに離す</p>
+  <script type="module" src="game.js"></script>
+</body>
+</html>

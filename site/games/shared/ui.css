@@ -1,0 +1,391 @@
+/* ミニゲーム共通のスタイル。色・書体は本体の 3D ビューア（site/style.css）に合わせる */
+:root {
+  --paper: #f4ede2;
+  --paper-deep: #e7dccb;
+  --ink: #2b1d14;
+  --ink-soft: #6f5a49;
+  --line: rgba(64, 40, 22, 0.14);
+  --chip: rgba(255, 252, 246, 0.78);
+  --chip-hover: rgba(255, 252, 246, 0.96);
+  --accent: #8a3b17;
+  --accent-ink: #fff8ef;
+  --gold: #c98a3e;
+  --great: #c0392b;
+  --good: #8a3b17;
+  --ok: #6f5a49;
+  --bad: #4d5b6a;
+  --shadow: 0 10px 30px -12px rgba(60, 34, 14, 0.35);
+  --mincho: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --gothic: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --anton: "Anton", "Impact", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1d1612;
+    --paper-deep: #120d0a;
+    --ink: #f3e7d6;
+    --ink-soft: #b9a48f;
+    --line: rgba(243, 231, 214, 0.14);
+    --chip: rgba(40, 30, 24, 0.78);
+    --chip-hover: rgba(58, 44, 35, 0.96);
+    --accent: #c4642f;
+    --good: #e08a52;
+    --great: #ff6b50;
+    --ok: #b9a48f;
+    --bad: #9fb0c2;
+    --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  color: var(--ink);
+  font-family: var(--gothic);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.g-body {
+  overflow: hidden;
+  background:
+    radial-gradient(120% 90% at 50% 58%, transparent 40%, var(--paper-deep) 100%),
+    var(--paper);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ゲームの 3D 表示（各ページで <canvas class="g-canvas"> を置く） */
+.g-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  outline: none;
+}
+
+/* ---- 上部バー ---- */
+.g-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  pointer-events: none;
+}
+.g-top > * { pointer-events: auto; }
+.g-top-left { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+.g-back {
+  flex: none;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+}
+.g-back:hover { background: var(--chip-hover); color: var(--ink); }
+.g-title {
+  margin: 0;
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+.g-hud {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+.g-hud-item {
+  display: grid;
+  justify-items: center;
+  min-width: 64px;
+  padding: 4px 12px 5px;
+  border-radius: 14px;
+  background: var(--chip);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.g-hud-label { font-size: 10px; letter-spacing: 0.18em; color: var(--ink-soft); }
+.g-hud-value {
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.g-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.g-icon:hover { background: var(--chip-hover); color: var(--ink); }
+
+@media (max-width: 640px) {
+  .g-title { display: none; }
+  .g-hud-item { min-width: 54px; padding: 3px 9px 4px; }
+  .g-hud-value { font-size: 19px; }
+  .g-back { padding: 8px 10px; font-size: 12px; }
+}
+
+/* ---- ボタン ---- */
+.g-btn {
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: var(--chip);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 12px 22px;
+  min-height: 46px;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.12s;
+}
+.g-btn:hover { background: var(--chip-hover); }
+.g-btn:active { transform: scale(0.96); }
+.g-btn:focus-visible, .g-icon:focus-visible, .g-back:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.g-primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.g-primary:hover { background: color-mix(in srgb, var(--accent) 86%, black); }
+
+/* ---- スタート・結果 ---- */
+.g-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 72px 16px 24px;
+  background: color-mix(in srgb, var(--paper) 55%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+.g-overlay[hidden] { display: none; }
+.g-overlay.g-enter .g-card { animation: g-card-in 0.42s cubic-bezier(0.2, 0.9, 0.2, 1.2); }
+.g-overlay.g-leave { animation: g-fade-out 0.22s forwards; }
+@keyframes g-card-in { from { opacity: 0; transform: translateY(24px) scale(0.94); } }
+@keyframes g-fade-out { to { opacity: 0; } }
+
+.g-card {
+  width: min(460px, 100%);
+  padding: 28px 26px 24px;
+  border-radius: 22px;
+  background: var(--chip-hover);
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px -24px rgba(60, 34, 14, 0.5);
+  text-align: center;
+}
+.g-kicker { margin: 0; font-size: 12px; letter-spacing: 0.35em; color: var(--ink-soft); }
+.g-card-title {
+  margin: 6px 0 10px;
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 44px;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+}
+.g-lead { margin: 0 0 14px; font-size: 14px; line-height: 1.9; color: var(--ink-soft); }
+.g-rules {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  list-style: none;
+  text-align: left;
+  font-size: 13.5px;
+  line-height: 1.8;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+}
+.g-rules li { padding-left: 1.2em; text-indent: -1.2em; }
+.g-rules li::before { content: "・"; color: var(--accent); }
+.g-options { margin: 0 0 16px; padding: 0; border: 0; display: grid; gap: 6px; }
+.g-options legend { font-size: 12px; letter-spacing: 0.2em; color: var(--ink-soft); margin: 0 auto 6px; }
+.g-option {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  text-align: left;
+  font-weight: 700;
+}
+.g-option small { font-weight: 400; font-size: 12px; color: var(--ink-soft); margin-left: auto; }
+.g-option:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.g-option input { accent-color: var(--accent); }
+.g-best { margin: 0 0 14px; font-size: 13px; color: var(--ink-soft); letter-spacing: 0.1em; }
+.g-best strong { font-family: var(--mincho); font-size: 18px; color: var(--ink); margin-left: 4px; }
+.g-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+
+.g-rank {
+  margin: 8px 0 0;
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 34px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+.g-score { margin: 4px 0 6px; display: flex; justify-content: center; align-items: baseline; gap: 8px; }
+.g-score-label { font-size: 12px; letter-spacing: 0.25em; color: var(--ink-soft); }
+.g-score strong { font-family: var(--mincho); font-weight: 800; font-size: 64px; line-height: 1; }
+.g-unit { font-size: 16px; color: var(--ink-soft); }
+.g-newbest {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  animation: g-pulse 1.2s ease-in-out infinite;
+}
+@keyframes g-pulse { 50% { transform: scale(1.06); } }
+.g-detail { margin: 0 0 18px; font-size: 13.5px; line-height: 1.9; }
+.g-detail table { margin: 0 auto; border-collapse: collapse; }
+.g-detail td { padding: 2px 10px; }
+.g-detail td:last-child { text-align: right; font-family: var(--mincho); font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+
+/* ---- 判定の文字 ---- */
+.g-fx { position: fixed; inset: 0; z-index: 15; pointer-events: none; overflow: hidden; }
+.g-pop {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--r, 0deg));
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 34px;
+  white-space: nowrap;
+  letter-spacing: 0.05em;
+  paint-order: stroke fill;
+  -webkit-text-stroke: 6px var(--paper);
+  animation: g-pop 1.05s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+.g-pop.great { color: var(--great); font-size: 46px; }
+.g-pop.good { color: var(--good); }
+.g-pop.ok { color: var(--ok); font-size: 28px; }
+.g-pop.bad { color: var(--bad); font-size: 30px; }
+@keyframes g-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scale(2.6); filter: blur(6px); }
+  14% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(0.92); filter: blur(0); }
+  24% { transform: translate(-50%, -50%) rotate(var(--r)) scale(1.05); }
+  70% { opacity: 1; transform: translate(-50%, -90%) rotate(var(--r)) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -130%) rotate(var(--r)) scale(0.96); }
+}
+.g-big {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: min(34vw, 220px);
+  line-height: 1;
+  color: var(--accent);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 10px var(--paper);
+  animation: g-big 0.62s cubic-bezier(0.2, 0.9, 0.2, 1) forwards;
+}
+.g-big.go { font-size: min(20vw, 150px); color: var(--great); white-space: nowrap; }
+.g-big.go, .g-big.end { animation-duration: 0.9s; }
+.g-big.end { font-size: min(16vw, 120px); color: var(--ink); white-space: nowrap; }
+@keyframes g-big {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(3); filter: blur(10px); }
+  22% { opacity: 1; transform: translate(-50%, -50%) scale(0.94); filter: blur(0); }
+  34% { transform: translate(-50%, -50%) scale(1.03); }
+  75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+}
+
+body.g-shake .g-canvas { animation: g-shake 0.32s linear; }
+@keyframes g-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translate(var(--shake), calc(var(--shake) * -0.6)); }
+  30% { transform: translate(calc(var(--shake) * -0.8), calc(var(--shake) * 0.5)); }
+  50% { transform: translate(calc(var(--shake) * 0.5), calc(var(--shake) * 0.4)); }
+  70% { transform: translate(calc(var(--shake) * -0.3), calc(var(--shake) * -0.2)); }
+}
+
+/* ---- 読み込み ---- */
+.g-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+  background: var(--paper);
+  transition: opacity 0.5s ease;
+}
+.g-loading.done { opacity: 0; pointer-events: none; }
+.g-loading-mark {
+  width: 46px;
+  height: 64px;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: g-breathe 1.4s ease-in-out infinite;
+}
+@keyframes g-breathe { 50% { transform: scale(0.9); opacity: 0.35; } }
+
+/* ---- 下部の操作ボタン（各ゲームで使う） ---- */
+.g-controls {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  pointer-events: none;
+}
+.g-controls > * { pointer-events: auto; }
+.g-hint {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 9;
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.g-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .g-pop, .g-big, .g-newbest, .g-loading-mark, .g-overlay.g-enter .g-card { animation-duration: 0.01s; }
+  body.g-shake .g-canvas { animation: none; }
+}

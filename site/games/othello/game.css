@@ -1,0 +1,159 @@
+/* 金萬オセロだけのスタイル（共通の ui.css のあとに読む） */
+
+.ot-ico {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+  vertical-align: -0.28em;
+}
+.g-hud-label .ot-ico { width: 13px; height: 13px; margin-right: 3px; vertical-align: -2px; }
+.g-hud-label { display: inline-flex; align-items: center; }
+
+/* 手番の石を強調 */
+.g-hud-item { transition: background-color 0.25s, border-color 0.25s, transform 0.25s; }
+.g-hud-item.ot-now {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--chip-hover));
+  transform: translateY(1px);
+}
+.g-hud-item.ot-now .g-hud-label { color: var(--accent); font-weight: 700; }
+.g-hud-item.ot-bump .g-hud-value { animation: ot-bump 0.3s cubic-bezier(0.2, 0.9, 0.2, 1.4); }
+@keyframes ot-bump { 40% { transform: scale(1.3); } }
+
+/* 手番の札 */
+.ot-turn {
+  position: fixed;
+  z-index: 9;
+  top: calc(66px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px 7px 12px;
+  border-radius: 999px;
+  background: var(--chip-hover);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  font-family: var(--mincho);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.ot-turn[hidden] { display: none; }
+.ot-turn .ot-ico { width: 22px; height: 22px; }
+.ot-turn.ot-in { animation: ot-turn-in 0.42s cubic-bezier(0.2, 0.9, 0.2, 1.3); }
+@keyframes ot-turn-in {
+  0% { opacity: 0; transform: translateX(-50%) scale(1.5) rotate(-4deg); filter: blur(4px); }
+  60% { opacity: 1; transform: translateX(-50%) scale(0.96); filter: blur(0); }
+}
+.ot-turn.ot-thinking span::after {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: ot-dots 1.2s steps(4) infinite;
+}
+@keyframes ot-dots {
+  0% { content: ""; }
+  25% { content: "・"; }
+  50% { content: "・・"; }
+  75% { content: "・・・"; }
+}
+
+/* 下の切り替えボタン */
+.ot-controls[hidden] { display: none; }
+.ot-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  padding: 10px 18px 10px 14px;
+  box-shadow: var(--shadow);
+}
+.ot-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-soft);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.ot-toggle[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--chip-hover));
+}
+.ot-toggle[aria-pressed="true"] .ot-dot { background: var(--accent); border-color: var(--accent); }
+.ot-short { display: none; }
+@media (max-width: 640px) {
+  .ot-long { display: none; }
+  .ot-short { display: inline; }
+  .ot-toggle { padding: 10px 16px 10px 12px; min-width: 88px; justify-content: center; }
+  .ot-turn { font-size: 15px; top: calc(62px + env(safe-area-inset-top)); }
+}
+
+/* スタート画面 */
+.ot-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ot-row .g-option { justify-content: center; align-items: center; gap: 6px; }
+.ot-side.ot-off { opacity: 0.4; }
+.ot-check { align-items: center; margin: 0 0 16px; flex-wrap: wrap; }
+.ot-check small { margin-left: 0; flex-basis: 100%; padding-left: 26px; margin-top: -2px; }
+.g-lead strong { color: var(--accent); font-weight: 900; }
+
+/* 結果画面 */
+.ot-vs { font-size: 20px; margin: 0 0.4em; color: var(--ink-soft); font-family: var(--gothic); vertical-align: 0.5em; }
+.ot-wins { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-soft); letter-spacing: 0.06em; }
+.g-detail td .ot-ico { margin-right: 4px; }
+
+/* 長い一言は小さめに */
+.g-fx .g-big.ot-small { font-size: min(8.6vw, 64px); letter-spacing: 0.06em; }
+
+@media (max-width: 640px) {
+  .g-card-title { font-size: 36px; }
+  .g-rules { font-size: 12.5px; }
+}
+
+/* あそびかたは横並びの 3 択に */
+.g-card > .g-options:not(.ot-side) { grid-template-columns: repeat(3, 1fr); }
+.g-card > .g-options:not(.ot-side) legend { grid-column: 1 / -1; }
+.g-card > .g-options:not(.ot-side) .g-option {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  text-align: center;
+  line-height: 1.35;
+  position: relative;
+}
+.g-card > .g-options:not(.ot-side) .g-option input { margin: 0; }
+.g-card > .g-options:not(.ot-side) .g-option small { margin: 0; font-size: 11px; }
+.g-card { padding: 22px 22px 20px; }
+.g-card-title { margin: 4px 0 6px; }
+.g-lead { margin-bottom: 10px; line-height: 1.8; }
+.g-rules { margin-bottom: 12px; padding: 10px 14px; line-height: 1.7; }
+.g-options { margin-bottom: 12px; }
+@media (hover: none) {
+  .g-rules li:has(.ot-kbd) { display: none; }
+}
+.ot-turn { transition: opacity 0.25s; }
+.ot-turn.ot-busy { opacity: 0.55; }
+.g-lead { text-wrap: balance; }
+.g-rules li, .ot-check small { text-wrap: pretty; }
+
+/* 背の低い横長の画面（スマホの横向きなど）: 札は上の列に、切り替えは右に縦並び */
+@media (max-height: 520px) and (min-aspect-ratio: 4/3) {
+  .ot-turn { top: calc(14px + env(safe-area-inset-top)); }
+  .ot-controls {
+    left: auto;
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+  }
+  .ot-toggle { justify-content: flex-start; }
+}

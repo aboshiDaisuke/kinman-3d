@@ -1,0 +1,20 @@
+/* 金萬タワー */
+.t-hint {
+  transition: opacity 0.3s ease;
+}
+.t-hint[hidden] {
+  display: block;
+  opacity: 0;
+}
+.t-hint kbd {
+  font: inherit;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--chip);
+}
+@media (hover: none) {
+  .t-hint .t-key { display: none; }
+}
+.g-big.t-crash { color: var(--bad); }
+.g-big.go.t-crash { font-size: min(15vw, 130px); }
